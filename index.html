@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Premium</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'mono': ['SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Source Code Pro', 'Menlo', 'Consolas', monospace]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .calculator-button {
+            transition: all 0.15s ease;
+        }
+        
+        .calculator-button:hover {
+            transform: translateY(-1px);
+        }
+        
+        .calculator-button:active {
+            transform: translateY(0);
+        }
+        
+        .operator-active {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
+            color: white !important;
+        }
+        
+        .number-animation {
+            animation: fadeInScale 0.2s ease-out;
+        }
+        
+        @keyframes fadeInScale {
+            0% { opacity: 0.7; transform: scale(0.95); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        
+        .glass-effect {
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-sm">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-white mb-2">Calculadora</h1>
+            <p class="text-slate-300">Pressione as teclas ou clique nos botões</p>
+        </div>
+        
+        <!-- Calculator -->
+        <div class="glass-effect rounded-3xl p-6 shadow-2xl">
+            <!-- Display -->
+            <div class="bg-black/40 rounded-2xl p-6 mb-6 border border-white/10">
+                <div class="text-slate-400 text-sm font-mono mb-1 h-5" id="operation"></div>
+                <div class="text-white text-4xl font-mono text-right font-light" id="display">0</div>
+            </div>
+            
+            <!-- Buttons Grid -->
+            <div class="grid grid-cols-4 gap-3">
+                <!-- Row 1: AC, ±, %, ÷ -->
+                <button class="calculator-button bg-slate-600 hover:bg-slate-500 text-white rounded-2xl h-16 text-lg font-semibold" data-action="clear">AC</button>
+                <button class="calculator-button bg-slate-600 hover:bg-slate-500 text-white rounded-2xl h-16 text-lg font-semibold" data-action="toggle-sign">±</button>
+                <button class="calculator-button bg-slate-600 hover:bg-slate-500 text-white rounded-2xl h-16 text-lg font-semibold" data-action="percent">%</button>
+                <button class="calculator-button bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-2xl h-16 text-2xl font-light" data-operator="/">÷</button>
+                
+                <!-- Row 2: 7, 8, 9, × -->
+                <button class="calculator-button bg-slate-700 hover:bg-slate-600 text-white rounded-2xl h-16 text-2xl font-light" data-number="7">7</button>
+                <button class="calculator-button bg-slate-700 hover:bg-slate-600 text-white rounded-2xl h-16 text-2xl font-light" data-number="8">8</button>
+                <button class="calculator-button bg-slate-700 hover:bg-slate-600 text-white rounded-2xl h-16 text-2xl font-light" data-number="9">9</button>
+                <button class="calculator-button bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-2xl h-16 text-2xl font-light" data-operator="*">×</button>
+                
+                <!-- Row 3: 4, 5, 6, - -->
+                <button class="calculator-button bg-slate-700 hover:bg-slate-600 text-white rounded-2xl h-16 text-2xl font-light" data-number="4">4</button>
+                <button class="calculator-button bg-slate-700 hover:bg-slate-600 text-white rounded-2xl h-16 text-2xl font-light" data-number="5">5</button>
+                <button class="calculator-button bg-slate-700 hover:bg-slate-600 text-white rounded-2xl h-16 text-2xl font-light" data-number="6">6</button>
+                <button class="calculator-button bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-2xl h-16 text-2xl font-light" data-operator="-">−</button>
+                
+                <!-- Row 4: 1, 2, 3, + -->
+                <button class="calculator-button bg-slate-700 hover:bg-slate-600 text-white rounded-2xl h-16 text-2xl font-light" data-number="1">1</button>
+                <button class="calculator-button bg-slate-700 hover:bg-slate-600 text-white rounded-2xl h-16 text-2xl font-light" data-number="2">2</button>
+                <button class="calculator-button bg-slate-700 hover:bg-slate-600 text-white rounded-2xl h-16 text-2xl font-light" data-number="3">3</button>
+                <button class="calculator-button bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-2xl h-16 text-2xl font-light" data-operator="+">+</button>
+                
+                <!-- Row 5: 0, ., = -->
+                <button class="calculator-button bg-slate-700 hover:bg-slate-600 text-white rounded-2xl h-16 text-2xl font-light col-span-2" data-number="0">0</button>
+                <button class="calculator-button bg-slate-700 hover:bg-slate-600 text-white rounded-2xl h-16 text-2xl font-light" data-action="decimal">.</button>
+                <button class="calculator-button bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-2xl h-16 text-2xl font-light" data-action="equals">=</button>
+            </div>
+            
+            <!-- Backspace button -->
+            <button class="calculator-button w-full mt-3 bg-slate-600 hover:bg-slate-500 text-white rounded-2xl h-12 text-sm font-semibold" data-action="backspace">
+                ⌫ Backspace
+            </button>
+        </div>
+        
+        <!-- Footer -->
+        <div class="text-center mt-6 text-slate-400 text-sm">
+            Use o teclado: números, +, -, *, /, Enter, Escape, Backspace
+        </div>
+    </div>
+
+    <script>
+        class Calculator {
+            constructor() {
+                this.display = document.getElementById('display');
+                this.operation = document.getElementById('operation');
+                this.currentInput = '0';
+                this.previousInput = '';
+                this.operator = null;
+                this.waitingForNumber = false;
+                this.lastOperator = null;
+                
+                this.init();
+            }
+            
+            init() {
+                // Button event listeners
+                document.querySelectorAll('.calculator-button').forEach(button => {
+                    button.addEventListener('click', (e) => this.handleButtonClick(e));
+                });
+                
+                // Keyboard event listeners
+                document.addEventListener('keydown', (e) => this.handleKeyPress(e));
+                
+                this.updateDisplay();
+            }
+            
+            handleButtonClick(e) {
+                const button = e.target;
+                
+                // Visual feedback
+                button.style.transform = 'scale(0.95)';
+                setTimeout(() => button.style.transform = '', 100);
+                
+                if (button.dataset.number) {
+                    this.inputNumber(button.dataset.number);
+                } else if (button.dataset.operator) {
+                    this.inputOperator(button.dataset.operator);
+                } else if (button.dataset.action) {
+                    this.handleAction(button.dataset.action);
+                }
+            }
+            
+            handleKeyPress(e) {
+                e.preventDefault();
+                
+                if (e.key >= '0' && e.key <= '9') {
+                    this.inputNumber(e.key);
+                } else if (['+', '-', '*', '/'].includes(e.key)) {
+                    this.inputOperator(e.key);
+                } else if (e.key === 'Enter' || e.key === '=') {
+                    this.handleAction('equals');
+                } else if (e.key === 'Escape') {
+                    this.handleAction('clear');
+                } else if (e.key === 'Backspace') {
+                    this.handleAction('backspace');
+                } else if (e.key === '.') {
+                    this.handleAction('decimal');
+                } else if (e.key === '%') {
+                    this.handleAction('percent');
+                }
+            }
+            
+            inputNumber(num) {
+                if (this.waitingForNumber) {
+                    this.currentInput = num;
+                    this.waitingForNumber = false;
+                } else {
+                    this.currentInput = this.currentInput === '0' ? num : this.currentInput + num;
+                }
+                
+                this.updateDisplay();
+                this.addNumberAnimation();
+            }
+            
+            inputOperator(op) {
+                if (this.operator && !this.waitingForNumber) {
+                    this.calculate();
+                }
+                
+                this.previousInput = this.currentInput;
+                this.operator = op;
+                this.waitingForNumber = true;
+                this.lastOperator = op;
+                
+                this.updateOperatorDisplay();
+                this.highlightOperator(op);
+            }
+            
+            handleAction(action) {
+                switch (action) {
+                    case 'clear':
+                        this.clear();
+                        break;
+                    case 'equals':
+                        this.calculate();
+                        break;
+                    case 'decimal':
+                        this.addDecimal();
+                        break;
+                    case 'percent':
+                        this.percent();
+                        break;
+                    case 'toggle-sign':
+                        this.toggleSign();
+                        break;
+                    case 'backspace':
+                        this.backspace();
+                        break;
+                }
+            }
+            
+            calculate() {
+                if (!this.operator || this.waitingForNumber) return;
+                
+                const prev = parseFloat(this.previousInput);
+                const current = parseFloat(this.currentInput);
+                let result;
+                
+                try {
+                    switch (this.operator) {
+                        case '+':
+                            result = prev + current;
+                            break;
+                        case '-':
+                            result = prev - current;
+                            break;
+                        case '*':
+                            result = prev * current;
+                            break;
+                        case '/':
+                            if (current === 0) {
+                                throw new Error('Divisão por zero');
+                            }
+                            result = prev / current;
+                            break;
+                        default:
+                            return;
+                    }
+                    
+                    // Handle floating point precision
+                    result = Math.round((result + Number.EPSILON) * 100000000) / 100000000;
+                    
+                    this.currentInput = result.toString();
+                    this.operator = null;
+                    this.waitingForNumber = true;
+                    this.operation.textContent = '';
+                    
+                } catch (error) {
+                    this.currentInput = 'Erro';
+                    this.operator = null;
+                    this.waitingForNumber = true;
+                }
+                
+                this.updateDisplay();
+                this.clearOperatorHighlight();
+            }
+            
+            clear() {
+                this.currentInput = '0';
+                this.previousInput = '';
+                this.operator = null;
+                this.waitingForNumber = false;
+                this.operation.textContent = '';
+                this.updateDisplay();
+                this.clearOperatorHighlight();
+            }
+            
+            addDecimal() {
+                if (this.waitingForNumber) {
+                    this.currentInput = '0.';
+                    this.waitingForNumber = false;
+                } else if (this.currentInput.indexOf('.') === -1) {
+                    this.currentInput += '.';
+                }
+                this.updateDisplay();
+            }
+            
+            percent() {
+                this.currentInput = (parseFloat(this.currentInput) / 100).toString();
+                this.updateDisplay();
+            }
+            
+            toggleSign() {
+                if (this.currentInput !== '0') {
+                    this.currentInput = this.currentInput.charAt(0) === '-' 
+                        ? this.currentInput.slice(1) 
+                        : '-' + this.currentInput;
+                }
+                this.updateDisplay();
+            }
+            
+            backspace() {
+                if (this.currentInput.length > 1) {
+                    this.currentInput = this.currentInput.slice(0, -1);
+                } else {
+                    this.currentInput = '0';
+                }
+                this.updateDisplay();
+            }
+            
+            updateDisplay() {
+                // Format the number for display
+                let displayValue = this.currentInput;
+                
+                if (displayValue !== 'Erro' && !isNaN(displayValue)) {
+                    const num = parseFloat(displayValue);
+                    if (Math.abs(num) > 999999999 || (Math.abs(num) < 0.000001 && num !== 0)) {
+                        displayValue = num.toExponential(6);
+                    } else {
+                        displayValue = num.toLocaleString('pt-BR', {
+                            maximumFractionDigits: 8,
+                            minimumFractionDigits: 0
+                        });
+                    }
+                }
+                
+                this.display.textContent = displayValue;
+            }
+            
+            updateOperatorDisplay() {
+                if (this.operator && this.previousInput) {
+                    const operatorSymbol = {
+                        '+': '+',
+                        '-': '−',
+                        '*': '×',
+                        '/': '÷'
+                    };
+                    this.operation.textContent = `${parseFloat(this.previousInput).toLocaleString('pt-BR')} ${operatorSymbol[this.operator]}`;
+                }
+            }
+            
+            highlightOperator(op) {
+                this.clearOperatorHighlight();
+                const button = document.querySelector(`[data-operator="${op}"]`);
+                if (button) {
+                    button.classList.add('operator-active');
+                }
+            }
+            
+            clearOperatorHighlight() {
+                document.querySelectorAll('[data-operator]').forEach(button => {
+                    button.classList.remove('operator-active');
+                });
+            }
+            
+            addNumberAnimation() {
+                this.display.classList.add('number-animation');
+                setTimeout(() => {
+                    this.display.classList.remove('number-animation');
+                }, 200);
+            }
+        }
+        
+        // Initialize calculator when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new Calculator();
+        });
+    </script>
+</body>
+</html>
